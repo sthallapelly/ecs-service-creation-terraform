@@ -1,0 +1,46 @@
+{
+  "my-example-service1": {
+    "service_name": "my-example-service1",
+    "ecr_name": "my-example-service1",
+    "task_family": "my-example-service1-td",
+
+    "container": {
+      "name": "my-example-service1",
+      "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/my-example-service1:latest",
+      "cpu": 512,
+      "memory": 1024,
+      "port_mappings": [{ "container_port": 8080 }]
+    },
+
+    "environment": { "SPRING_PROFILES_ACTIVE": "dev" },
+    "secrets": { "DB_PASSWORD": "arn:aws:secretsmanager:us-east-1:123:secret:db-pass" },
+
+    "main_container_mount_points": [
+      { "source_volume": "cms-logs", "container_path": "/app/logs", "read_only": false }
+    ],
+    "volumes": [{ "name": "cms-logs" }],
+
+    "enable_cloudwatch_agent": true,
+    "cloudwatch_agent_config": {
+      "name": "cms-cloudwatch-agent",
+      "image": "111122223333.dkr.ecr.us-east-1.amazonaws.com/cloudwatch-agent:latest",
+      "cpu": 0,
+      "environment": [{ "name": "service_name", "value": "my-example-service1" }],
+      "mount_points": [
+        { "source_volume": "my-example-service1-logs", "container_path": "/logs/my-example-service1", "read_only": false }
+      ],
+      "log_configuration": {
+        "log_driver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-example-service1-cloudwatch-agent",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    },
+
+    "target_group_port": 8080,
+    "health_check_path": "/health",
+    "enable_service_connect": true
+  }
+}
