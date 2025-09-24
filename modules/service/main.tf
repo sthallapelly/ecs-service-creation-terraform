@@ -41,17 +41,27 @@ resource "aws_lb_listener_rule" "this" {
       path_pattern { values = var.rule_path_patterns }
     }
   }
+
+  dynamic "condition" {
+    for_each = var.rule_http_header_name != "" && length(var.rule_http_header_values) > 0 ? [1] : []
+    content {
+      http_header {
+        http_header_name = var.rule_http_header_name
+        values           = var.rule_http_header_values
+      }
+    }
+  }
 }
 
 resource "aws_ecs_service" "this" {
-  name            = var.service_name
-  cluster         = var.cluster_arn
-  task_definition = var.task_definition_arn
-  desired_count   = var.desired_count
-  launch_type     = "FARGATE"
-  platform_version = var.platform_version
+  name                              = var.service_name
+  cluster                           = var.cluster_arn
+  task_definition                   = var.task_definition_arn
+  desired_count                     = var.desired_count
+  launch_type                       = "FARGATE"
+  platform_version                  = var.platform_version
   health_check_grace_period_seconds = var.health_check_grace_period_seconds
-  enable_ecs_managed_tags = true
+  enable_ecs_managed_tags           = true
 
 
   deployment_controller { type = var.deployment_controller_type }
@@ -74,27 +84,33 @@ resource "aws_ecs_service" "this" {
   dynamic "service_connect_configuration" {
     for_each = var.enable_service_connect ? [1] : []
     content {
-      namespace              = var.service_connect_namespace
-      enabled = var.enable_service_connect
+      namespace = var.service_connect_namespace
+      enabled   = var.enable_service_connect
+      log_configuration {
+        log_driver = "awslogs"
+        options = {
+          awslogs-group         = "ecs/${var.service_name}-SC"
+          awslogs-region        = "us-east-1"
+          # awslogs-stream-prefix = var.service_connect_log_prefix
+          awslogs-create-group  = true
+
+        }
+      }
       service {
-        discovery_name         = var.service_connect_discovery_name
-        port_name = var.service_connect_port_name
+        discovery_name = var.service_connect_discovery_name
+        port_name      = var.service_connect_port_name
         client_alias {
-          port      = var.container_port
+          port     = var.container_port
           dns_name = var.service_connect_discovery_name
         }
-      # log_configuration {
-      #   log_driver = "awslogs"
-      #   options = {
-      #     awslogs-group         = var.service_connect_log_group
-      #     awslogs-region        = var.service_connect_log_region
-      #     awslogs-stream-prefix = var.service_connect_log_prefix
-      #   }
+        timeout {
+          per_request_timeout_seconds = 120
+        }
+
       }
     }
   }
+    tags = var.tags
 
-  tags = var.tags
-
-  depends_on = [aws_lb_listener_rule.this]
-}
+    depends_on = [aws_lb_listener_rule.this]
+  }

@@ -88,6 +88,17 @@ variable "rule_host_headers" {
   type = list(string)
   default = []
 }
+variable "rule_http_header_name" {
+  type        = string
+  default     = ""
+  description = "HTTP header name to match in the listener rule"
+}
+
+variable "rule_http_header_values" {
+  type        = list(string)
+  default     = []
+  description = "Values for the HTTP header condition in the listener rule"
+}
 
 variable "enable_service_connect" {
   type    = bool
@@ -105,6 +116,11 @@ variable "service_connect_port_name" {
   type    = string
   default = ""
 }
+variable "service_connect_per_request_timeout_sec" {
+  type        = number
+  default     = 120
+  description = "Per-request timeout in seconds for Service Connect"
+}
 variable "service_connect_ingress_port_override" {
   type    = number
   default = 0
@@ -119,4 +135,5 @@ variable "health_check_grace_period_seconds" {
   type    = number
   default = 60
 }
+
 

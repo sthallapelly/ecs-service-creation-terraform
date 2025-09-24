@@ -68,8 +68,10 @@ module "service" {
   listener_arn       = var.listener_arn
   create_listener_rule = var.listener_arn != "" ? true : false
   listener_rule_priority = lookup(each.value, "listener_rule_priority", 100)
-  rule_path_patterns = lookup(each.value, "rule_path_patterns", ["/*"])
-  rule_host_headers  = lookup(each.value, "rule_host_headers", [])
+  rule_path_patterns     = lookup(each.value, "rule_path_patterns", ["/*"])
+  rule_host_headers      = lookup(each.value, "rule_host_headers", [])
+  rule_http_header_name  = lookup(each.value, "rule_http_header_name", "")
+  rule_http_header_values = lookup(each.value, "rule_http_header_values", [])
 
   enable_service_connect                = lookup(each.value, "enable_service_connect", false)
   service_connect_namespace             = lookup(each.value, "service_connect_namespace", "default")
