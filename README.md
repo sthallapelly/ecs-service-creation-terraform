@@ -7,7 +7,7 @@ It covers everything from **ECR repositories** to **task definitions** (with opt
 
 ---
 
-## 📌 Features
+## Features
 
 * **Modular design** (`ecr`, `task_definition`, `service`)
 * **Dynamic JSON-driven config** (`services.json`)
@@ -110,7 +110,7 @@ resource "aws_ecs_service" "this" {
 
 ---
 
-## 🔑 Runtime Variables (`terraform.tfvars`)
+## Runtime Variables (`terraform.tfvars`)
 
 ```hcl
 aws_region         = "us-east-1"
@@ -123,7 +123,7 @@ listener_arn       = "arn:aws:elasticloadbalancing:us-east-1:123:listener/app/my
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ```bash
 terraform init

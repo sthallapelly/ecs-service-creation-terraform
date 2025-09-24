@@ -12,7 +12,7 @@
       "port_mappings": [{ "container_port": 8080 }]
     },
 
-    "environment": { "SPRING_PROFILES_ACTIVE": "dev" },
+    "environment": { "SPRING_PROFILE": "dev" },
     "secrets": { "DB_PASSWORD": "arn:aws:secretsmanager:us-east-1:123:secret:db-pass" },
 
     "main_container_mount_points": [
